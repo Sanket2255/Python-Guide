@@ -838,7 +838,7 @@ __NAV__
 __CHAPTERS__
 
 <div class="closing">
-  <p>Built as a personal reference — edit any chapter in <code>generate.py</code> and re-run it to update this page.</p>
+  <p>Built as a personal reference </p>
 </div>
 
 </div>
