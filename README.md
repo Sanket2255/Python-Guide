@@ -49,4 +49,4 @@ git remote add origin <your-repo-url>
 git push -u origin main
 ```
 
-If you want it live on the web for free, enable GitHub Pages on the repo and point it at `output.html` (or rename it to `index.html`).
+If you want it live on the web for free, enable GitHub Pages on the repo. The site now generates an `index.html` homepage automatically, so GitHub Pages will serve it correctly.

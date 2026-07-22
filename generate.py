@@ -871,7 +871,9 @@ def main():
     html_out = TEMPLATE.replace("__NAV__", nav).replace("__CHAPTERS__", chapters_html)
     with open("output.html", "w", encoding="utf-8") as f:
         f.write(html_out)
-    print(f"Generated output.html — {len(CHAPTERS)} chapters")
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html_out)
+    print(f"Generated output.html and index.html — {len(CHAPTERS)} chapters")
 
 if __name__ == "__main__":
     main()

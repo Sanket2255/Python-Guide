@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — A Practical Guide</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<style>
+  :root {
+    --teal: #0F766E;
+    --teal-light: #F0FDFA;
+    --teal-border: #99F6E4;
+    --slate: #0F172A;
+    --slate-mid: #475569;
+    --slate-light: #64748B;
+    --bg: #F8FAFC;
+    --white: #ffffff;
+    --amber: #B45309;
+    --amber-light: #FFFBEB;
+    --code-bg: #0F172A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Inter", "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--slate-mid); line-height: 1.7; }
+
+  .sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100vh; background: var(--slate); overflow-y: auto; z-index: 100; padding-bottom: 40px; }
+  .sidebar-logo { padding: 22px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; }
+  .sidebar-logo h2 { color: white; font-size: 15px; font-weight: 700; }
+  .sidebar-logo p { color: rgba(255,255,255,0.5); font-size: 11.5px; margin-top: 4px; }
+  .nav-label { padding: 12px 20px 4px; color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; }
+  .sidebar a { display: block; padding: 7px 20px; color: rgba(255,255,255,0.72); text-decoration: none; font-size: 12.8px; border-left: 3px solid transparent; }
+  .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.08); color: white; border-left-color: var(--teal-border); }
+
+  .main { margin-left: 260px; min-height: 100vh; }
+
+  .cover { background: linear-gradient(135deg, #0F172A 0%, #134E4A 100%); min-height: 70vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 70px 40px; }
+  .cover h1 { color: white; font-size: clamp(34px,6vw,60px); font-weight: 800; margin-bottom: 16px; }
+  .cover h1 span { color: #5EEAD4; }
+  .cover p { color: rgba(255,255,255,0.7); font-size: 16px; max-width: 480px; }
+
+  .chapter-header { background: linear-gradient(135deg, var(--teal) 0%, #134E4A 100%); padding: 48px 56px 36px; position: relative; overflow: hidden; }
+  .chapter-header::after { content: attr(data-num); position: absolute; right: 40px; top: 50%; transform: translateY(-50%); font-size: 100px; font-weight: 900; color: rgba(255,255,255,0.08); }
+  .chapter-num { color: #5EEAD4; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .chapter-header h1 { color: white; font-size: clamp(24px,4vw,36px); font-weight: 800; position: relative; z-index: 1; }
+
+  .content { padding: 40px 56px; max-width: 880px; }
+  .section { background: white; border: 1px solid #E2E8F0; border-radius: 14px; padding: 26px 30px; border-left: 5px solid var(--teal); box-shadow: 0 2px 10px rgba(15,23,42,0.04); }
+  .section h3 { color: var(--teal); font-size: 14.5px; font-weight: 700; margin: 18px 0 8px; }
+  .section p { margin-bottom: 10px; font-size: 15px; }
+  .section ul { padding-left: 20px; margin-bottom: 10px; }
+  .section li { font-size: 14.5px; margin-bottom: 6px; }
+
+  pre { background: var(--code-bg); border-radius: 10px; padding: 16px 20px; margin: 14px 0; overflow-x: auto; font-size: 13px; }
+  pre code { font-family: "Fira Code", "Courier New", monospace; }
+
+  .ref-table { width: 100%; border-collapse: collapse; margin: 14px 0; border-radius: 8px; overflow: hidden; }
+  .ref-table th { background: var(--teal); color: white; padding: 10px 14px; text-align: left; font-size: 12.5px; }
+  .ref-table td { padding: 9px 14px; border-bottom: 1px solid #E2E8F0; font-size: 13.5px; }
+  .ref-table tr:nth-child(even) td { background: var(--teal-light); }
+
+  .note { border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
+  .note-info { background: var(--teal-light); border-left: 4px solid var(--teal); }
+  .note-warn { background: var(--amber-light); border-left: 4px solid var(--amber); }
+  .note-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--slate-light); margin-bottom: 4px; }
+  .note-text { font-size: 14px; color: var(--slate); }
+
+  .questions { background: var(--teal-light); border-radius: 12px; padding: 20px 24px; margin: 20px 0 0; }
+  .questions h3 { color: var(--teal); margin-bottom: 14px; font-size: 14.5px; }
+  .q-item { background: white; border: 1px solid var(--teal-border); border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; }
+  .q-item:last-child { margin-bottom: 0; }
+  .q-num { color: var(--teal); font-weight: 800; font-size: 12px; margin-bottom: 4px; }
+  .q-text { font-size: 13.5px; color: var(--slate); margin-bottom: 6px; }
+  .q-io { display: flex; gap: 8px; flex-wrap: wrap; }
+  .q-io span { background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 6px; padding: 3px 9px; font-family: monospace; font-size: 12px; }
+  .q-in { color: var(--teal); }
+  .q-out { color: #16A34A; }
+
+  .closing { background: linear-gradient(135deg, #0F172A, #134E4A); padding: 50px 60px; text-align: center; color: rgba(255,255,255,0.8); font-size: 14px; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .content, .chapter-header { padding-left: 22px; padding-right: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h2>Python Guide</h2>
+    <p>Personal learning notes</p>
+  </div>
+  <a href="#cover">Cover</a>
+<div class="nav-label">Start Here</div>
+<a href="#intro">00 &mdash; What is Python?</a>
+<div class="nav-label">Basics</div>
+<a href="#install">01 &mdash; Installation &amp; Running Python</a>
+<a href="#comments-vars">02 &mdash; Comments &amp; Variables</a>
+<a href="#data-types">03 &mdash; Data Types</a>
+<a href="#strings">04 &mdash; Strings &amp; Type Conversion</a>
+<a href="#io-operators">05 &mdash; Input, Output &amp; Operators</a>
+<div class="nav-label">Control Flow</div>
+<a href="#conditionals">06 &mdash; Conditional Statements</a>
+<a href="#loops-intro">07 &mdash; Loops — Overview</a>
+<a href="#for-loop">08 &mdash; For Loop</a>
+<a href="#while-loop">09 &mdash; While Loop</a>
+<div class="nav-label">Building Blocks</div>
+<a href="#functions">10 &mdash; Functions</a>
+<div class="nav-label">Data Structures</div>
+<a href="#ds-intro">11 &mdash; Data Structures — Overview</a>
+<a href="#list">12 &mdash; List</a>
+<a href="#tuple">13 &mdash; Tuple</a>
+<a href="#set">14 &mdash; Set</a>
+<a href="#dict">15 &mdash; Dictionary</a>
+<div class="nav-label">Robust Code</div>
+<a href="#exceptions">16 &mdash; Exception Handling</a>
+<a href="#files">17 &mdash; File Handling</a>
+<div class="nav-label">OOP</div>
+<a href="#oop-intro">18 &mdash; OOP in Python — Overview</a>
+<a href="#classes">19 &mdash; Classes</a>
+<a href="#objects">20 &mdash; Objects</a>
+<a href="#constructor">21 &mdash; Constructor (__init__)</a>
+<a href="#attrs-methods">22 &mdash; Attributes &amp; Methods</a>
+<a href="#inheritance">23 &mdash; Inheritance</a>
+<a href="#polymorphism">24 &mdash; Polymorphism</a>
+<a href="#encapsulation">25 &mdash; Encapsulation</a>
+<a href="#abstraction">26 &mdash; Abstraction</a>
+<a href="#dunder">27 &mdash; Dunder (Magic) Methods</a>
+<div class="nav-label">Beyond the Basics</div>
+<a href="#advanced">28 &mdash; Advanced Topics</a>
+</nav>
+
+<div class="main">
+
+<section id="cover" class="cover">
+  <h1>Python<br><span>A Practical Guide</span></h1>
+  <p>From your first line of code to object-oriented programming — with practice questions at every step.</p>
+</section>
+
+
+<section id="intro">
+  <div class="chapter-header" data-num="00">
+    <div class="chapter-num">Chapter 00</div>
+    <h1>What is Python?</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Python is a high-level, general-purpose programming language created by Guido van Rossum and released in 1991. It's known for readable syntax that looks close to plain English, which makes it a popular first language and also a workhorse for web backends, data science, automation, and AI.</p><h3>Compiled vs Interpreted</h3><p>A compiled language (C, C++, Rust) translates the entire program into machine code before it runs, so execution is fast but you don't see any output until the whole build succeeds. An interpreted language (Python, JavaScript, Ruby) reads and executes code line by line, which makes development faster to iterate on but typically runs slower than compiled code.</p><table class="ref-table"><tr><th>Aspect</th><th>Compiled</th><th>Interpreted (Python)</th></tr><tr><td>Translation</td><td>All at once, ahead of time</td><td>Line by line, at runtime</td></tr><tr><td>Speed</td><td>Faster execution</td><td>Slower execution</td></tr><tr><td>Errors</td><td>Caught before running</td><td>Stops at first error hit</td></tr><tr><td>Portability</td><td>Needs a rebuild per platform</td><td>Runs anywhere Python is installed</td></tr></table><div class="note note-info"><div class="note-title">Where Python fits</div><div class="note-text">The CPython interpreter reads your .py file top to bottom, converts it to bytecode, and executes it on the fly — which is why a Python script can crash partway through instead of failing all at once.</div></div></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">In your own words, explain the difference between a compiled and an interpreted language, and give one real example of each.</div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Why do you think Python is a popular choice for beginners compared to a language like C++?</div></div></div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="chapter-header" data-num="01">
+    <div class="chapter-num">Chapter 01</div>
+    <h1>Installation &amp; Running Python</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Download Python from python.org (or use a package manager) and confirm the install from a terminal:</p><pre><code class="language-python">python --version
+# or on some systems:
+python3 --version</code></pre><h3>Two ways to run code</h3><ul><li>REPL (Read-Eval-Print Loop): type `python` in a terminal to get an interactive shell — great for quick tests.</li><li>Script file: save code in a `.py` file and run it with `python filename.py`.</li></ul><pre><code class="language-python"># hello.py
+print("Hello, Python!")
+
+# run it:
+# python hello.py</code></pre><div class="note note-warn"><div class="note-title">Common first mistake</div><div class="note-text">Forgetting the .py extension, or running the file from a different folder than the one it's saved in, are the two most common reasons a beginner's 'python hello.py' fails with a file-not-found error.</div></div></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Write and run a script that prints your name and today's weekday on two separate lines.</div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">What command checks which Python version is installed on your machine?</div></div></div>
+  </div>
+</section>
+
+<section id="comments-vars">
+  <div class="chapter-header" data-num="02">
+    <div class="chapter-num">Chapter 02</div>
+    <h1>Comments &amp; Variables</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Comments are notes for humans — Python ignores them completely. Variables are named boxes that hold values; Python figures out the type automatically when you assign one.</p><pre><code class="language-python"># This is a single-line comment
+
+'''
+This is a
+multi-line comment (technically a string Python discards)
+'''
+
+name = "Aditi"      # string
+age = 21            # integer
+height = 5.6        # float
+is_student = True   # boolean
+
+print(name, age, height, is_student)</code></pre><h3>Naming rules</h3><ul><li>Must start with a letter or underscore, never a digit.</li><li>Can contain letters, digits, underscores — no spaces or symbols.</li><li>Case-sensitive: `score` and `Score` are different variables.</li><li>Convention: use snake_case for variable names (total_marks, not TotalMarks).</li></ul></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Create three variables — your city, your age, and your favorite number — then print all three in one line.</div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Which of these are valid variable names, and why: `2total`, `_total`, `total-marks`, `totalMarks`?</div></div></div>
+  </div>
+</section>
+
+<section id="data-types">
+  <div class="chapter-header" data-num="03">
+    <div class="chapter-num">Chapter 03</div>
+    <h1>Data Types</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Every value in Python has a type. The core built-in types are:</p><table class="ref-table"><tr><th>Type</th><th>Example</th><th>Description</th></tr><tr><td>int</td><td>42</td><td>Whole numbers</td></tr><tr><td>float</td><td>3.14</td><td>Decimal numbers</td></tr><tr><td>str</td><td>"hello"</td><td>Text</td></tr><tr><td>bool</td><td>True / False</td><td>Logical values</td></tr><tr><td>list</td><td>[1, 2, 3]</td><td>Ordered, changeable collection</td></tr><tr><td>tuple</td><td>(1, 2, 3)</td><td>Ordered, unchangeable collection</td></tr><tr><td>set</td><td>{1, 2, 3}</td><td>Unordered, unique values</td></tr><tr><td>dict</td><td>{"a": 1}</td><td>Key-value pairs</td></tr><tr><td>NoneType</td><td>None</td><td>Represents 'no value'</td></tr></table><pre><code class="language-python">x = 10
+print(type(x))        # &lt;class 'int'&gt;
+
+y = "10"
+print(type(y))        # &lt;class 'str'&gt;
+
+print(x == int(y))    # True — value 10 equals 10 after conversion</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">What does `type(3.0)` return, and how is it different from `type(3)`?</div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Given `value = None`, write a check that prints "empty" if value is None, else prints the value.</div></div></div>
+  </div>
+</section>
+
+<section id="strings">
+  <div class="chapter-header" data-num="04">
+    <div class="chapter-num">Chapter 04</div>
+    <h1>Strings &amp; Type Conversion</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Strings are sequences of characters. They support slicing, formatting, and a large set of built-in methods.</p><pre><code class="language-python">name = "Python"
+print(name[0])          # P
+print(name[-1])         # n
+print(name[0:3])        # Pyt
+print(name.upper())     # PYTHON
+print(name.lower())     # python
+print(len(name))        # 6
+print(name.replace("Py", "My"))  # Mython
+
+age = 21
+message = f"I am {age} years old"   # f-string
+print(message)</code></pre><h3>Type conversion</h3><pre><code class="language-python">print(int("42") + 8)     # 50
+print(str(42) + "8")     # "428"
+print(float("3.5") * 2)  # 7.0
+print(int(3.9))          # 3 (truncates, doesn't round)</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Given `word = "Programming"`, print just "gram" using slicing.</div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Convert the string "15" and the string "4.5" to numbers and print their sum.</div></div></div>
+  </div>
+</section>
+
+<section id="io-operators">
+  <div class="chapter-header" data-num="05">
+    <div class="chapter-num">Chapter 05</div>
+    <h1>Input, Output &amp; Operators</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>`input()` reads a line of text from the user (always as a string). `print()` writes output, and accepts multiple values plus a `sep` / `end` option.</p><pre><code class="language-python">name = input("What is your name? ")
+print("Hello,", name, sep=" ", end="!\n")</code></pre><h3>Operators</h3><table class="ref-table"><tr><th>Category</th><th>Operators</th><th>Example</th></tr><tr><td>Arithmetic</td><td>+ - * / // % **</td><td>7 // 2 -&gt; 3, 7 % 2 -&gt; 1</td></tr><tr><td>Comparison</td><td>== != &gt; &lt; &gt;= &lt;=</td><td>5 == 5 -&gt; True</td></tr><tr><td>Logical</td><td>and or not</td><td>True and False -&gt; False</td></tr><tr><td>Assignment</td><td>= += -= *= /=</td><td>x += 1</td></tr></table></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Take two numbers from the user and print their sum, difference, and product.</div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Explain the difference between `/` and `//` with an example.</div></div></div>
+  </div>
+</section>
+
+<section id="conditionals">
+  <div class="chapter-header" data-num="06">
+    <div class="chapter-num">Chapter 06</div>
+    <h1>Conditional Statements</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>`if` / `elif` / `else` let a program branch based on a condition.</p><pre><code class="language-python">marks = 72
+
+if marks &gt;= 90:
+    grade = "A"
+elif marks &gt;= 75:
+    grade = "B"
+elif marks &gt;= 60:
+    grade = "C"
+else:
+    grade = "F"
+
+print(grade)   # C</code></pre><div class="note note-info"><div class="note-title">Ternary shortcut</div><div class="note-text">`grade = "Pass" if marks &gt;= 40 else "Fail"` packs a simple if/else into one line.</div></div></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Write a program that checks if a number is positive, negative, or zero.</div><div class="q-io"><span class="q-in">Input: -5</span><span class="q-out">Output: Negative</span></div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Write a program that decides if a year is a leap year.</div><div class="q-io"><span class="q-in">Input: 2024</span><span class="q-out">Output: Leap year</span></div></div></div>
+  </div>
+</section>
+
+<section id="loops-intro">
+  <div class="chapter-header" data-num="07">
+    <div class="chapter-num">Chapter 07</div>
+    <h1>Loops — Overview</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Loops repeat a block of code. Python has two: `for` (iterate over a known sequence) and `while` (repeat while a condition holds). `break` exits a loop early, `continue` skips to the next iteration.</p><pre><code class="language-python">for i in range(3):
+    if i == 1:
+        continue   # skip printing 1
+    print(i)        # prints 0, then 2
+
+count = 0
+while True:
+    count += 1
+    if count == 3:
+        break
+print(count)        # 3</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">What's the difference between `break` and `continue`? Give a one-line example of each.</div></div></div>
+  </div>
+</section>
+
+<section id="for-loop">
+  <div class="chapter-header" data-num="08">
+    <div class="chapter-num">Chapter 08</div>
+    <h1>For Loop</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>A `for` loop walks through any iterable — a range, a string, a list, and so on.</p><pre><code class="language-python">for i in range(1, 6):
+    print(i, end=" ")          # 1 2 3 4 5
+
+for ch in "abc":
+    print(ch.upper())          # A B C (each on its own line)
+
+fruits = ["apple", "banana", "mango"]
+for index, fruit in enumerate(fruits):
+    print(index, fruit)</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Print all even numbers from 1 to 20 using a for loop.</div><div class="q-io"><span class="q-in">Input: 1 to 20</span><span class="q-out">Output: 2 4 6 ... 20</span></div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Print a right-angle triangle of stars using nested for loops.</div><div class="q-io"><span class="q-in">Input: 4</span><span class="q-out">Output: *
+**
+***
+****</span></div></div></div>
+  </div>
+</section>
+
+<section id="while-loop">
+  <div class="chapter-header" data-num="09">
+    <div class="chapter-num">Chapter 09</div>
+    <h1>While Loop</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>A `while` loop repeats as long as its condition is true — useful when you don't know in advance how many times you'll loop.</p><pre><code class="language-python">n = 5
+factorial = 1
+while n &gt; 1:
+    factorial *= n
+    n -= 1
+print(factorial)   # 120</code></pre><div class="note note-warn"><div class="note-title">Infinite loops</div><div class="note-text">Forgetting to update the loop's condition variable (like `n -= 1` above) is the most common cause of a while loop that never ends.</div></div></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Use a while loop to print the multiplication table of a given number up to 10.</div><div class="q-io"><span class="q-in">Input: 5</span><span class="q-out">Output: 5 10 15 ... 50</span></div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Use a while loop to reverse the digits of a number.</div><div class="q-io"><span class="q-in">Input: 1234</span><span class="q-out">Output: 4321</span></div></div></div>
+  </div>
+</section>
+
+<section id="functions">
+  <div class="chapter-header" data-num="10">
+    <div class="chapter-num">Chapter 10</div>
+    <h1>Functions</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>A function is a reusable, named block of code. Parameters can have default values, and functions can return a value with `return`.</p><pre><code class="language-python">def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}!"
+
+print(greet("Riya"))                 # Hello, Riya!
+print(greet("Riya", "Good morning")) # Good morning, Riya!
+
+def add(a, b):
+    return a + b
+
+result = add(4, 5)
+print(result)   # 9</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Write a function `is_even(n)` that returns True if n is even, else False.</div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Write a function `factorial(n)` that returns n! using a loop inside the function.</div><div class="q-io"><span class="q-in">Input: 5</span><span class="q-out">Output: 120</span></div></div></div>
+  </div>
+</section>
+
+<section id="ds-intro">
+  <div class="chapter-header" data-num="11">
+    <div class="chapter-num">Chapter 11</div>
+    <h1>Data Structures — Overview</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Python ships with four built-in collection types, each suited to a different job:</p><table class="ref-table"><tr><th>Type</th><th>Ordered?</th><th>Duplicates?</th><th>Mutable?</th><th>Use it for</th></tr><tr><td>list</td><td>Yes</td><td>Yes</td><td>Yes</td><td>A general-purpose sequence you'll modify</td></tr><tr><td>tuple</td><td>Yes</td><td>Yes</td><td>No</td><td>A fixed sequence (like coordinates)</td></tr><tr><td>set</td><td>No</td><td>No</td><td>Yes</td><td>Fast membership checks, removing duplicates</td></tr><tr><td>dict</td><td>Yes (3.7+)</td><td>Keys: No</td><td>Yes</td><td>Looking values up by a key</td></tr></table></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">You need to store a student's (name, roll_no) that should never change. Which data structure fits, and why?</div></div></div>
+  </div>
+</section>
+
+<section id="list">
+  <div class="chapter-header" data-num="12">
+    <div class="chapter-num">Chapter 12</div>
+    <h1>List</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>A list is an ordered, changeable collection that allows duplicates.</p><pre><code class="language-python">marks = [88, 92, 79, 92]
+marks.append(100)          # [88, 92, 79, 92, 100]
+marks.remove(79)           # [88, 92, 92, 100]
+marks.sort()               # [88, 92, 92, 100]
+print(marks[0], marks[-1]) # 88 100
+print(len(marks))          # 4
+
+squares = [x**2 for x in range(5)]   # list comprehension
+print(squares)              # [0, 1, 4, 9, 16]</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Given `nums = [4, 2, 9, 1, 7]`, sort it in descending order without using `sort(reverse=False)` twice.</div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Write a list comprehension that returns only the odd numbers from 1 to 20.</div></div></div>
+  </div>
+</section>
+
+<section id="tuple">
+  <div class="chapter-header" data-num="13">
+    <div class="chapter-num">Chapter 13</div>
+    <h1>Tuple</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>A tuple is like a list but immutable — once created, it can't be changed. That makes it useful for fixed data and slightly faster to iterate over.</p><pre><code class="language-python">point = (4, 7)
+print(point[0], point[1])   # 4 7
+
+# point[0] = 10   # would raise TypeError — tuples can't be modified
+
+a, b = point                # unpacking
+print(a, b)                 # 4 7</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Why might you choose a tuple over a list for storing latitude/longitude coordinates?</div></div></div>
+  </div>
+</section>
+
+<section id="set">
+  <div class="chapter-header" data-num="14">
+    <div class="chapter-num">Chapter 14</div>
+    <h1>Set</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>A set stores unique, unordered values and is optimized for membership tests and mathematical set operations.</p><pre><code class="language-python">a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+
+print(a | b)   # union -&gt; {1,2,3,4,5,6}
+print(a &amp; b)   # intersection -&gt; {3,4}
+print(a - b)   # difference -&gt; {1,2}
+
+nums = [1, 2, 2, 3, 3, 3]
+unique = set(nums)
+print(unique)  # {1, 2, 3}</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Given two lists of names, use sets to find the names common to both.</div><div class="q-io"><span class="q-in">Input: ['A','B','C'], ['B','C','D']</span><span class="q-out">Output: {'B', 'C'}</span></div></div></div>
+  </div>
+</section>
+
+<section id="dict">
+  <div class="chapter-header" data-num="15">
+    <div class="chapter-num">Chapter 15</div>
+    <h1>Dictionary</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>A dictionary stores key-value pairs, letting you look up a value by its key instead of by position.</p><pre><code class="language-python">student = {"name": "Ishaan", "age": 20, "branch": "CSE"}
+
+print(student["name"])          # Ishaan
+student["age"] = 21             # update
+student["cgpa"] = 8.7           # add new key
+
+for key, value in student.items():
+    print(key, "-&gt;", value)
+
+print(student.get("email", "not set"))  # not set (safe lookup)</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Build a dictionary that counts how many times each character appears in a word.</div><div class="q-io"><span class="q-in">Input: "hello"</span><span class="q-out">Output: {'h':1,'e':1,'l':2,'o':1}</span></div></div></div>
+  </div>
+</section>
+
+<section id="exceptions">
+  <div class="chapter-header" data-num="16">
+    <div class="chapter-num">Chapter 16</div>
+    <h1>Exception Handling</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>`try` / `except` catches errors at runtime so your program can handle them gracefully instead of crashing.</p><pre><code class="language-python">try:
+    num = int(input("Enter a number: "))
+    result = 10 / num
+except ValueError:
+    print("That wasn't a valid number.")
+except ZeroDivisionError:
+    print("Can't divide by zero.")
+else:
+    print("Result:", result)
+finally:
+    print("Done processing.")</code></pre><div class="note note-info"><div class="note-title">else vs finally</div><div class="note-text">`else` runs only if no exception was raised; `finally` always runs, whether an exception happened or not — useful for cleanup like closing a file.</div></div></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Write a function that safely divides two numbers and returns "undefined" instead of crashing on division by zero.</div><div class="q-io"><span class="q-in">Input: 10, 0</span><span class="q-out">Output: undefined</span></div></div></div>
+  </div>
+</section>
+
+<section id="files">
+  <div class="chapter-header" data-num="17">
+    <div class="chapter-num">Chapter 17</div>
+    <h1>File Handling</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>The `with` statement opens a file and automatically closes it afterward, even if an error occurs.</p><pre><code class="language-python"># writing
+with open("notes.txt", "w") as f:
+    f.write("Learning Python\n")
+    f.write("File handling is useful.\n")
+
+# reading
+with open("notes.txt", "r") as f:
+    content = f.read()
+    print(content)
+
+# appending
+with open("notes.txt", "a") as f:
+    f.write("One more line.\n")</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Write code that reads a text file and prints only the lines that contain the word "error".</div></div></div>
+  </div>
+</section>
+
+<section id="oop-intro">
+  <div class="chapter-header" data-num="18">
+    <div class="chapter-num">Chapter 18</div>
+    <h1>OOP in Python — Overview</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Object-Oriented Programming organizes code around objects — bundles of data (attributes) and behavior (methods) — rather than just a sequence of instructions. Python supports the four pillars of OOP: encapsulation, inheritance, polymorphism, and abstraction, covered chapter by chapter next.</p></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">In your own words, what's the difference between a class and an object?</div></div></div>
+  </div>
+</section>
+
+<section id="classes">
+  <div class="chapter-header" data-num="19">
+    <div class="chapter-num">Chapter 19</div>
+    <h1>Classes</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>A class is a blueprint for creating objects — it defines what attributes and methods every object of that type will have.</p><pre><code class="language-python">class Car:
+    wheels = 4   # class attribute, shared by all cars
+
+    def honk(self):
+        return "Beep beep!"
+
+print(Car.wheels)   # 4</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Define a class `Circle` with a class attribute `pi = 3.14` and a method `describe` that returns a fixed sentence.</div></div></div>
+  </div>
+</section>
+
+<section id="objects">
+  <div class="chapter-header" data-num="20">
+    <div class="chapter-num">Chapter 20</div>
+    <h1>Objects</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>An object is a specific instance of a class, with its own data.</p><pre><code class="language-python">class Car:
+    def __init__(self, brand, color):
+        self.brand = brand
+        self.color = color
+
+car1 = Car("Toyota", "Red")
+car2 = Car("Honda", "Blue")
+
+print(car1.brand, car1.color)   # Toyota Red
+print(car2.brand, car2.color)   # Honda Blue</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Create two `Car` objects with different brands and print both brand names.</div></div></div>
+  </div>
+</section>
+
+<section id="constructor">
+  <div class="chapter-header" data-num="21">
+    <div class="chapter-num">Chapter 21</div>
+    <h1>Constructor (__init__)</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>`__init__` runs automatically when an object is created, letting you set up its initial state.</p><pre><code class="language-python">class Student:
+    def __init__(self, name, marks):
+        self.name = name
+        self.marks = marks
+        print(f"{name}'s profile created.")
+
+s1 = Student("Meera", 88)   # prints: Meera's profile created.
+print(s1.marks)             # 88</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Add a default value for `marks` in the Student constructor so it's optional, defaulting to 0.</div></div></div>
+  </div>
+</section>
+
+<section id="attrs-methods">
+  <div class="chapter-header" data-num="22">
+    <div class="chapter-num">Chapter 22</div>
+    <h1>Attributes &amp; Methods</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Attributes are the data stored on an object; methods are functions defined inside a class that act on that data via `self`.</p><pre><code class="language-python">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+
+    def withdraw(self, amount):
+        if amount &gt; self.balance:
+            print("Insufficient funds")
+        else:
+            self.balance -= amount
+
+acc = BankAccount("Dev")
+acc.deposit(500)
+acc.withdraw(200)
+print(acc.balance)   # 300</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Add a `transfer(self, other_account, amount)` method to `BankAccount` that moves money to another account.</div></div></div>
+  </div>
+</section>
+
+<section id="inheritance">
+  <div class="chapter-header" data-num="23">
+    <div class="chapter-num">Chapter 23</div>
+    <h1>Inheritance</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Inheritance lets one class (child) reuse and extend the attributes/methods of another (parent).</p><pre><code class="language-python">class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return "Some generic sound"
+
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name} says Woof!"
+
+class Cat(Animal):
+    def speak(self):
+        return f"{self.name} says Meow!"
+
+for pet in [Dog("Rex"), Cat("Milo")]:
+    print(pet.speak())</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Create a `Bird` class that inherits from `Animal` and overrides `speak` to return "chirps".</div></div></div>
+  </div>
+</section>
+
+<section id="polymorphism">
+  <div class="chapter-header" data-num="24">
+    <div class="chapter-num">Chapter 24</div>
+    <h1>Polymorphism</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Polymorphism means the same method name can behave differently depending on which object calls it — as seen with `speak()` in the previous chapter. It also shows up as built-in functions behaving differently per type, like `len()` working on strings, lists, and dicts alike.</p><pre><code class="language-python">print(len("hello"))        # 5
+print(len([1, 2, 3, 4]))   # 4
+print(len({"a": 1, "b": 2}))  # 2</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Write three classes — Square, Circle, Triangle — each with an `area()` method, then loop over a list of them calling `area()` on each.</div></div></div>
+  </div>
+</section>
+
+<section id="encapsulation">
+  <div class="chapter-header" data-num="25">
+    <div class="chapter-num">Chapter 25</div>
+    <h1>Encapsulation</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Encapsulation bundles data with the methods that operate on it, and restricts direct access using naming conventions: a single underscore (`_x`) signals 'internal use', a double underscore (`__x`) triggers name-mangling for stronger protection.</p><pre><code class="language-python">class Account:
+    def __init__(self, balance):
+        self.__balance = balance   # 'private' attribute
+
+    def get_balance(self):
+        return self.__balance
+
+    def deposit(self, amount):
+        if amount &gt; 0:
+            self.__balance += amount
+
+acc = Account(1000)
+acc.deposit(500)
+print(acc.get_balance())   # 1500
+# print(acc.__balance)     # would raise AttributeError</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Explain why exposing `balance` directly (without a getter) could be risky in a banking application.</div></div></div>
+  </div>
+</section>
+
+<section id="abstraction">
+  <div class="chapter-header" data-num="26">
+    <div class="chapter-num">Chapter 26</div>
+    <h1>Abstraction</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Abstraction hides implementation details and exposes only what's necessary. Python provides `ABC` (Abstract Base Class) to force subclasses to implement specific methods.</p><pre><code class="language-python">from abc import ABC, abstractmethod
+
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+
+class Rectangle(Shape):
+    def __init__(self, w, h):
+        self.w, self.h = w, h
+
+    def area(self):
+        return self.w * self.h
+
+# Shape()          # would raise TypeError — can't instantiate an abstract class
+r = Rectangle(4, 5)
+print(r.area())     # 20</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Add a `Circle(Shape)` class that implements `area()` using radius, and explain what happens if you forget to implement it.</div></div></div>
+  </div>
+</section>
+
+<section id="dunder">
+  <div class="chapter-header" data-num="27">
+    <div class="chapter-num">Chapter 27</div>
+    <h1>Dunder (Magic) Methods</h1>
+  </div>
+  <div class="content">
+    <div class="section"><p>Double-underscore methods let your objects work with Python's built-in syntax — printing, addition, comparisons, and more.</p><pre><code class="language-python">class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+    def __str__(self):
+        return f"Point({self.x}, {self.y})"
+
+    def __add__(self, other):
+        return Point(self.x + other.x, self.y + other.y)
+
+p1 = Point(1, 2)
+p2 = Point(3, 4)
+print(p1)          # Point(1, 2)  — thanks to __str__
+print(p1 + p2)     # Point(4, 6)  — thanks to __add__</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Add an `__eq__` method to `Point` so that `Point(1,2) == Point(1,2)` returns True.</div></div></div>
+  </div>
+</section>
+
+<section id="advanced">
+  <div class="chapter-header" data-num="28">
+    <div class="chapter-num">Chapter 28</div>
+    <h1>Advanced Topics</h1>
+  </div>
+  <div class="content">
+    <div class="section"><h3>*args and **kwargs</h3><pre><code class="language-python">def total(*args):              # args becomes a tuple
+    return sum(args)
+
+def profile(**kwargs):         # kwargs becomes a dict
+    for k, v in kwargs.items():
+        print(f"{k}: {v}")
+
+print(total(1, 2, 3, 4))       # 10
+profile(name="Sara", age=22)</code></pre><h3>Comprehensions</h3><pre><code class="language-python">squares = [x**2 for x in range(5)]                  # [0, 1, 4, 9, 16]
+evens_dict = {x: x**2 for x in range(5) if x % 2 == 0}  # {0:0, 2:4, 4:16}</code></pre><h3>Lambda, map, filter, zip</h3><pre><code class="language-python">square = lambda x: x ** 2
+print(square(6))   # 36
+
+nums = [1, 2, 3, 4, 5]
+doubled = list(map(lambda x: x * 2, nums))       # [2,4,6,8,10]
+evens   = list(filter(lambda x: x % 2 == 0, nums)) # [2, 4]
+pairs   = list(zip(["a", "b"], [1, 2]))            # [('a',1), ('b',2)]</code></pre><h3>Decorators &amp; generators (a quick taste)</h3><pre><code class="language-python">def logger(func):
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__}")
+        return func(*args, **kwargs)
+    return wrapper
+
+@logger
+def greet():
+    print("Hi!")
+
+greet()   # Calling greet \n Hi!
+
+def countdown(n):
+    while n &gt; 0:
+        yield n
+        n -= 1
+
+for num in countdown(3):
+    print(num)   # 3 2 1</code></pre></div>
+    <div class="questions"><h3>Practice Questions</h3><div class="q-item"><div class="q-num">Q1</div><div class="q-text">Write a function `describe(**kwargs)` that prints each keyword argument as "key -&gt; value".</div></div><div class="q-item"><div class="q-num">Q2</div><div class="q-text">Write a generator function that yields the first n Fibonacci numbers.</div><div class="q-io"><span class="q-in">Input: 5</span><span class="q-out">Output: 0 1 1 2 3</span></div></div><div class="q-item"><div class="q-num">Q3</div><div class="q-text">Given a list of numbers, use `filter` and `lambda` to keep only numbers greater than 10.</div><div class="q-io"><span class="q-in">Input: [4, 15, 8, 23, 2]</span><span class="q-out">Output: [15, 23]</span></div></div></div>
+  </div>
+</section>
+
+<div class="closing">
+  <p>Built as a personal reference — edit any chapter in <code>generate.py</code> and re-run it to update this page.</p>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script>
+  hljs.highlightAll();
+
+  const sections = document.querySelectorAll("section[id]");
+  const links = document.querySelectorAll(".sidebar a");
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.remove("active"));
+        const a = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+        if (a) a.classList.add("active");
+      }
+    });
+  }, { threshold: 0.25 });
+  sections.forEach(s => io.observe(s));
+</script>
+</body>
+</html>
